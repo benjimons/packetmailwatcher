@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import ConfigParser
 import datetime, pprint
 import urllib, json
 import sqlite3
@@ -6,11 +7,17 @@ import sys
 from email.mime.text import MIMEText
 from subprocess import Popen, PIPE
 
-dir = "/opt/OSINT/packetmailwatcher"
-subnet = sys.argv[1]
+config = ConfigParser.RawConfigParser()
+cfgfile = sys.argv[1]
+
+config.read(cfgfile)
+dir = config.get('Global', 'dir')
+apikey = config.get('Global', 'apikey')
+fromaddr = config.get('Global', 'fromaddr')
+
+subnet = sys.argv[2]
 subnetnoslash = subnet.replace("/","-")
-mailto = sys.argv[2]
-apikey = ""
+mailto = sys.argv[3]
 
 #connect to DB - create one if it does not exist
 conn = sqlite3.connect(dir+'/dbs/pmdb-'+subnetnoslash+'.db')
@@ -72,7 +79,7 @@ except :
 #email the new results
 if newcounter > 0:
 	msg = MIMEText(msgstring)
-	msg["From"] = "Honeynet Packetmail Watcher <packetmail@honeynet.co.nz>"
+	msg["From"] = fromaddr
 	msg["To"] = mailto
 	msg["Subject"] = "Packetmail Watcher new threat intel on "+subnet
 	p = Popen(["/usr/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
