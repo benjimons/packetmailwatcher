@@ -1,0 +1,4 @@
+[Global]
+dir = /opt/OSINT/packetmailwatcher
+apikey = INSERTHERE
+fromaddr = Packetmail Watcher <packetmail@localhost>
