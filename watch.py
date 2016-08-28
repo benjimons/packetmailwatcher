@@ -58,14 +58,14 @@ try:
 				last_seen = dic[key]['last_seen']
 				refreshed = dic[key]['refreshed']
 				#Work out if we already saw this IP and context before
-				c.execute("SELECT * FROM reps where ip=? and engine=? and source=? and context=?", (thisip, key, source, context))
+				c.execute("SELECT * FROM reps where ip=? and engine=? and source=? and context=? and last_seen=?", (thisip, key, source, context, last_seen))
 				conn.commit()				
 				counter+=1
 				#if we didnt find this entry in the database, enter it and build a string for the email notification
 				if len(c.fetchall()) == 0:
-					c.execute("INSERT into reps (ip, engine, source, context) VALUES (?,?,?,?)", (thisip, key, source, context))
+					c.execute("INSERT into reps (ip, engine, source, context, last_seen) VALUES (?,?,?,?,?)", (thisip, key, source, context, last_seen))
 				        conn.commit()
-					newstring = "IP:"+thisip+" Source "+key+" context: "+context+"\r\n"
+					newstring = "IP:"+thisip+"\r\n\tSource: "+key+"\r\n\tContext: "+context+"\r\n\tLast_seen:"+last_seen+"\r\n"
 					#print newstring
 					msgstring += newstring
 					newcounter+=1
